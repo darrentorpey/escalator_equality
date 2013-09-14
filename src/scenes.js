@@ -52,10 +52,10 @@ Crafty.scene('Game', function() {
   });
 
   _(5).times(function(n) {
-    Crafty.e('Mahn').at(laydeeStart.x + 1, laydeeStart.y + 20 - (n * 2 + 1));
+    Crafty.e('Mahn').at(laydeeStart.x + 1, laydeeStart.y - 10 - (n * 2 + 1));
   });
   _(4).times(function(n) {
-    Crafty.e('Mahn').at(laydeeStart.x + 2, laydeeStart.y + 20 - (n * 2 + 1));
+    Crafty.e('Mahn').at(laydeeStart.x + 2, laydeeStart.y - 10 - (n * 2 + 1));
   });
 
   window.escalator =     Escalator.create({ x: mahnStart.x, y: mahnStart.y + 25, length: 12 });
