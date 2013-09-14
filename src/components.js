@@ -1,3 +1,8 @@
+directions = {
+  'up':   -1,
+  'down': 1
+};
+
 // The Grid component allows an element to be located
 //  on a grid of tiles
 Crafty.c('Grid', {
@@ -59,19 +64,21 @@ Crafty.c('Competitor', {
     this.inEscalator = false;
   },
 
-  setInEscalator: function() {
+  setInEscalator: function(data) {
     // console.log('Now in escalator');
     if (!this.inEscalator) {
       this.inEscalator = true;
-      // console.log('laydee._movement', laydee._movement);
-      laydee._movement = { x: laydee._movement.x, y: laydee._movement.y + 1 };
+      var thingWeHit = data[0].obj;
+      var shift = directions[thingWeHit.direction];
+      this.shiftEdBy = shift;
+      this._movement = { x: this._movement.x, y: this._movement.y + shift };
     }
   },
 
   outOfEscalator: function() {
     // console.log('Now out of escalator');
     this.inEscalator = false;
-    laydee._movement = { x: laydee._movement.x, y: laydee._movement.y - 1 };
+    this._movement = { x: this._movement.x, y: this._movement.y - this.shiftEdBy };
   }
 });
 
@@ -143,7 +150,15 @@ Crafty.c('Mahn', {
 
   Escalator = Models.defineSimpleModel('Escalator', {
     init: function() {
-      console.log('Escalator [' + this.length + 'x' + this.width + ']');
+      _.defaults(this, {
+        leftWall:  [],
+        rightWall: [],
+        length: 8,
+        width: 2,
+        direction: 'up'
+      });
+
+      console.log('Escalator [' + this.length + 'x' + this.width + '] (' + this.direction + ')');
 
       _(this.length).times(function(n) {
         var color = (n + this.animShift) % 3 ? '#BBBBBB' : '#DDDDDD';
@@ -153,10 +168,13 @@ Crafty.c('Mahn', {
 
       this.lastTime = new Date().getTime();
 
+      this.animShift = 20;
+
       var self = this,
           c_escalator = Crafty.e('Escalator').at(this.x, this.y);
 
       c_escalator.attr({ x: c_escalator.attr('x'), y: c_escalator.attr('y'), h: this.length * 8, w: (this.width + 2) * 8 });
+      c_escalator.direction = this.direction;
       c_escalator.initCollide();
       this.c = c_escalator;
 
@@ -166,34 +184,27 @@ Crafty.c('Mahn', {
         if (animTimePassed > 300) {
           self.lastTime = new Date().getTime();
           if (self.direction === 'down') {
-            self.animShift++;
-          } else {
             self.animShift--;
+          } else {
+            self.animShift++;
           }
-        }
 
-        _.each(self.leftWall, function(w, n) {
-          var color = (n + self.animShift) % 3 ? '#BBBBBB' : '#DDDDDD';
-          w.color(color);
-        });
-        _.each(self.rightWall, function(w, n) {
-          var color = (n + self.animShift) % 3 ? '#BBBBBB' : '#DDDDDD';
-          w.color(color);
-        });
+          _.each(self.leftWall, function(w, n) {
+            var color = (n + self.animShift) % 4 ? '#BBBBBB' : '#DDDDDD';
+            w.color(color);
+          });
+
+          _.each(self.rightWall, function(w, n) {
+            var color = (n + self.animShift) % 4 ? '#BBBBBB' : '#DDDDDD';
+            w.color(color);
+          });
+        }
       });
     },
     prototype: {
-      animShift: 0,
-
-      leftWall:  [],
-      rightWall: [],
-
-      length: 8,
-      width: 2,
-      direction: 'up',
-
       setDirection: function(val) {
         this.direction = val;
+        this.c.direction = this.direction;
       },
 
       toggleDirection: function() {

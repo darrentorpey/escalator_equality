@@ -38,6 +38,7 @@ Crafty.scene('Game', function() {
   Crafty.e('Mahn').at(12, 1);
 
   window.escalator = Escalator.create({ x: 5, y: 15, length: 12 });
+  window.escalatorDown = Escalator.create({ x: 15, y: 15, length: 10, direction: 'down' });
 
   // Show the victory screen once all villages are visisted
   this.show_victory = this.bind('VillageVisited', function() {
