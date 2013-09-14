@@ -32,7 +32,7 @@ Crafty.scene('Game', function() {
 
   drawWall();
 
-  Crafty.e('Laydee').at(1, 1);
+  window.laydee = Crafty.e('Laydee').at(1, 1);
 
   Crafty.e('Mahn').at(10, 1);
   Crafty.e('Mahn').at(12, 1);

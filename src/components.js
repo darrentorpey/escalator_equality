@@ -51,6 +51,29 @@ Crafty.c('Tree', {
     this.color('rgb(20, 125, 40)');
   },
 });
+Crafty.c('Competitor', {
+  init: function() {
+    this.requires('Collision')
+      .onHit('Escalator', this.setInEscalator, this.outOfEscalator);
+
+    this.inEscalator = false;
+  },
+
+  setInEscalator: function() {
+    // console.log('Now in escalator');
+    if (!this.inEscalator) {
+      this.inEscalator = true;
+      // console.log('laydee._movement', laydee._movement);
+      laydee._movement = { x: laydee._movement.x, y: laydee._movement.y + 1 };
+    }
+  },
+
+  outOfEscalator: function() {
+    // console.log('Now out of escalator');
+    this.inEscalator = false;
+    laydee._movement = { x: laydee._movement.x, y: laydee._movement.y - 1 };
+  }
+});
 
 // This is the player-controlled character
 Crafty.c('PlayerCharacter', {
@@ -58,8 +81,7 @@ Crafty.c('PlayerCharacter', {
     this.requires('PlainColorActor, Fourway, Collision')
       .fourway(2)
       .stopOnSolids()
-      .color('rgb(250, 250, 250)')
-      .onHit('Escalator', this.inEscalator, this.outOfEscalator);
+      .color('rgb(250, 250, 250)');
   },
 
   // Registers a stop-movement function to be called when
@@ -81,21 +103,13 @@ Crafty.c('PlayerCharacter', {
       this.x -= this._movement.x;
       this.y -= this._movement.y;
     }
-  },
-
-  inEscalator: function() {
-    console.log('in escalator');
-  },
-
-  outOfEscalator: function() {
-    console.log('out escalator');
   }
 });
 
 // Hey, it's a lady!
 Crafty.c('Laydee', {
   init: function() {
-    this.requires('PlayerCharacter');
+    this.requires('PlayerCharacter, Competitor');
     this.color('#C23464');
   }
 });
