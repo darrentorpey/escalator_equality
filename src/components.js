@@ -5,14 +5,14 @@ Crafty.c('Grid', {
     this.attr({
       w: Game.map_grid.tile.width,
       h: Game.map_grid.tile.height
-    })
+    });
   },
 
   // Locate this entity at the given position on the grid
   // 0, 0 is the bottom-left corner
   at: function(x, y) {
     if (x === undefined && y === undefined) {
-      return { x: this.x/Game.map_grid.tile.width, y: this.y/Game.map_grid.tile.height }
+      return { x: this.x/Game.map_grid.tile.width, y: this.y/Game.map_grid.tile.height };
     } else {
       this.attr({ x: x * Game.map_grid.tile.width, y: Game.height() - ((y + 1) * Game.map_grid.tile.height) });
       return this;
@@ -63,7 +63,7 @@ Crafty.c('Rock', {
 // This is the player-controlled character
 Crafty.c('PlayerCharacter', {
   init: function() {
-    this.requires('Actor, Fourway, Collision, Color')
+    this.requires('PlainColorActor, Fourway, Collision')
       .fourway(2)
       .stopOnSolids()
       .color('rgb(250, 250, 250)')
@@ -94,17 +94,24 @@ Crafty.c('PlayerCharacter', {
   }
 });
 
-// A village is a tile on the grid that the PC must visit in order to win the game
-Crafty.c('Village', {
+// Hey, it's a lady!
+Crafty.c('Laydee', {
+  init: function() {
+    this.requires('PlayerCharacter');
+    this.color('#C23464');
+  }
+});
+
+// It's a man, man
+Crafty.c('Mahn', {
   init: function() {
     this.requires('PlainColorActor');
     this.color('rgb(20, 185, 140)');
-  },
-
-  // Process a visitation with this village
-  visit: function() {
-    this.destroy();
-    Crafty.audio.play('knock');
-    Crafty.trigger('VillageVisited', this);
   }
 });
+
+(function() {
+  Escalator = Models.defineSimpleModel('Escalator', {
+    length: 4
+  });
+})();

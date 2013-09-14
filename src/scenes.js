@@ -2,16 +2,40 @@
 // -------------
 // Runs the core gameplay loop
 Crafty.scene('Game', function() {
-  // A 2D array to keep track of all occupied tiles
-  this.occupied = new Array(Game.map_grid.width);
-  for (var i = 0; i < Game.map_grid.width; i++) {
-    this.occupied[i] = new Array(Game.map_grid.height);
-    for (var y = 0; y < Game.map_grid.height; y++) {
-      this.occupied[i][y] = false;
+  function drawWall() {
+    // Place a tree at every edge square on our grid
+    for (var x = 0; x < Game.map_grid.width; x++) {
+      for (var y = 0; y < Game.map_grid.height; y++) {
+        var at_edge = x === 0 || x === Game.map_grid.width - 1 || y === 0 || y === Game.map_grid.height - 1;
+
+        if (at_edge) {
+          // Place a tree entity at the current tile
+          Crafty.e('Tree').at(x, y);
+          this.occupied[x][y] = true;
+        }
+      }
     }
   }
 
-  Crafty.e('Village').at(1, 1);
+  function initGrid() {
+    // A 2D array to keep track of all occupied tiles
+    this.occupied = new Array(Game.map_grid.width);
+    for (var i = 0; i < Game.map_grid.width; i++) {
+      this.occupied[i] = new Array(Game.map_grid.height);
+      for (var y = 0; y < Game.map_grid.height; y++) {
+        this.occupied[i][y] = false;
+      }
+    }
+  }
+
+  initGrid();
+
+  drawWall();
+
+  Crafty.e('Laydee').at(1, 1);
+
+  Crafty.e('Mahn').at(10, 1);
+  Crafty.e('Mahn').at(12, 1);
 
   // Player character, placed at 5, 5 on our grid
   this.player = Crafty.e('PlayerCharacter').at(5, 5);
