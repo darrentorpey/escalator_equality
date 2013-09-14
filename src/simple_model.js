@@ -10,10 +10,12 @@ Models.defineSimpleModel = function(modelName, attrDefaults) {
     var prototypeMethods = attrDefaults.prototype || {},
         modelMethods     = attrDefaults.model     || {},
         defaults         = attrDefaults.defaults  || {},
+        initFunc         = attrDefaults.init,
         defaultsFunc     = _.isFunction(defaults) ? defaults : function() { return defaults; };
     delete attrDefaults.prototype;
     delete attrDefaults.model;
     delete attrDefaults.defaults;
+    delete attrDefaults.init;
 
     var Model = function(modelData) {
         _.extend(this, { T: modelName }, modelData);
@@ -22,7 +24,9 @@ Models.defineSimpleModel = function(modelName, attrDefaults) {
 
     _.extend(Model, {
         create: function(modelData) {
-            return new Model(modelData);
+            var model = new Model(modelData);
+            initFunc.call(model);
+            return model;
         }
     }, modelMethods);
 

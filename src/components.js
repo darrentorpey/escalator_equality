@@ -30,9 +30,17 @@ Crafty.c('Actor', {
 
 // An "Actor" is an entity that is drawn in 2D on canvas
 //  via our logical coordinate grid
+Crafty.c('PlainColorTile', {
+  init: function() {
+    this.requires('2D, Canvas, Grid, Color');
+  },
+});
+
+// An "Actor" is an entity that is drawn in 2D on canvas
+//  via our logical coordinate grid
 Crafty.c('PlainColorActor', {
   init: function() {
-    this.requires('Actor, Solid, Color');
+    this.requires('PlainColorTile, Actor, Solid');
   },
 });
 
@@ -44,22 +52,6 @@ Crafty.c('Tree', {
   },
 });
 
-// A Bush is just an Actor with a certain sprite
-Crafty.c('Bush', {
-  init: function() {
-    this.requires('PlainColorActor');
-    this.color('rgb(20, 185, 40)');
-  },
-});
-
-// A Rock is just an Actor with a certain sprite
-Crafty.c('Rock', {
-  init: function() {
-    this.requires('PlainColorActor');
-    this.color('rgb(200, 200, 200)');
-  },
-});
-
 // This is the player-controlled character
 Crafty.c('PlayerCharacter', {
   init: function() {
@@ -67,13 +59,17 @@ Crafty.c('PlayerCharacter', {
       .fourway(2)
       .stopOnSolids()
       .color('rgb(250, 250, 250)')
-      .onHit('Village', this.visitVillage);
+      .onHit('Escalator', this.inEscalator, this.outOfEscalator);
   },
 
   // Registers a stop-movement function to be called when
   //  this entity hits an entity with the "Solid" component
   stopOnSolids: function() {
     this.onHit('Solid', this.stopMovement);
+
+    // this.onHit('Escalator', function() {
+    //   console.log('Hit an escalator');
+    // });
 
     return this;
   },
@@ -87,10 +83,12 @@ Crafty.c('PlayerCharacter', {
     }
   },
 
-  // Respond to this player visiting a village
-  visitVillage: function(data) {
-    villlage = data[0].obj;
-    villlage.visit();
+  inEscalator: function() {
+    console.log('in escalator');
+  },
+
+  outOfEscalator: function() {
+    console.log('out escalator');
   }
 });
 
@@ -111,7 +109,86 @@ Crafty.c('Mahn', {
 });
 
 (function() {
+  Crafty.c('EscalatorWall', {
+    init: function() {
+      this.requires('PlainColorTile, Solid');
+      this.color('#BBBBBB');
+    }
+  });
+
+  Crafty.c('Escalator', {
+    init: function() {
+      this.requires('Grid, Animation');
+      this.addComponent('Collision');
+    },
+
+    initCollide: function() {
+      this.collision();
+    },
+  });
+
   Escalator = Models.defineSimpleModel('Escalator', {
-    length: 4
+    init: function() {
+      console.log('Escalator [' + this.length + 'x' + this.width + ']');
+
+      _(this.length).times(function(n) {
+        var color = (n + this.animShift) % 3 ? '#BBBBBB' : '#DDDDDD';
+        this.leftWall.push(Crafty.e('EscalatorWall').at(this.x, this.y - n));
+        this.rightWall.push(Crafty.e('EscalatorWall').at(this.x + 1 + this.width, this.y - (n)));
+      }, this);
+
+      this.lastTime = new Date().getTime();
+
+      var self = this,
+          c_escalator = Crafty.e('Escalator').at(this.x, this.y);
+
+      c_escalator.attr({ x: c_escalator.attr('x'), y: c_escalator.attr('y'), h: this.length * 8, w: (this.width + 2) * 8 });
+      c_escalator.initCollide();
+      this.c = c_escalator;
+
+      this.c.bind('EnterFrame', function () {
+        var animTimePassed = (new Date().getTime()) -  self.lastTime;
+
+        if (animTimePassed > 300) {
+          self.lastTime = new Date().getTime();
+          if (self.direction === 'down') {
+            self.animShift++;
+          } else {
+            self.animShift--;
+          }
+        }
+
+        _.each(self.leftWall, function(w, n) {
+          var color = (n + self.animShift) % 3 ? '#BBBBBB' : '#DDDDDD';
+          w.color(color);
+        });
+        _.each(self.rightWall, function(w, n) {
+          var color = (n + self.animShift) % 3 ? '#BBBBBB' : '#DDDDDD';
+          w.color(color);
+        });
+      });
+    },
+    prototype: {
+      animShift: 0,
+
+      leftWall:  [],
+      rightWall: [],
+
+      length: 8,
+      width: 2,
+      direction: 'up',
+
+      setDirection: function(val) {
+        this.direction = val;
+      },
+
+      toggleDirection: function() {
+        if (this.direction === 'up') {
+          this.direction = 'down';
+        } else {
+          this.direction = 'up';
+        }
+      }
+    }
   });
 })();
