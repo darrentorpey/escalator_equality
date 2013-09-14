@@ -117,16 +117,31 @@ Crafty.c('PlayerCharacter', {
 Crafty.c('Laydee', {
   init: function() {
     this.requires('PlayerCharacter, Competitor');
-    this.color('#C23464');
+    this.color('#D4376C');
   }
 });
 
 // It's a man, man
 Crafty.c('Mahn', {
   init: function() {
-    this.requires('PlainColorActor');
-    this.color('rgb(20, 185, 140)');
-  }
+    this.requires('PlainColorActor, Competitor');
+    this._movement = { x: 0, y: 0 };
+    this._speed = { x: 3, y: 3 };
+    this.color('#387AD6');
+    this.bind("EnterFrame", this._enterframe);
+  },
+
+  _enterframe: function () {
+    if (this._movement.x !== 0) {
+      this.x += this._movement.x;
+      this.trigger('Moved', { x: this.x - this._movement.x, y: this.y });
+    }
+
+    if (this._movement.y !== 0) {
+      this.y += this._movement.y;
+      this.trigger('Moved', { x: this.x, y: this.y - this._movement.y });
+    }
+  },
 });
 
 (function() {

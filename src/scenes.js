@@ -35,7 +35,7 @@ Crafty.scene('Game', function() {
   window.laydee = Crafty.e('Laydee').at(1, 1);
 
   Crafty.e('Mahn').at(10, 1);
-  Crafty.e('Mahn').at(12, 1);
+  Crafty.e('Mahn').at(7, 4);
 
   window.escalator = Escalator.create({ x: 5, y: 15, length: 12 });
   window.escalatorDown = Escalator.create({ x: 15, y: 15, length: 10, direction: 'down' });
