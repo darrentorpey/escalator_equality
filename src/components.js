@@ -125,7 +125,7 @@ Crafty.c('Laydee', {
 Crafty.c('Mahn', {
   init: function() {
     this.requires('PlainColorActor, Competitor');
-    this._movement = { x: 0, y: 0 };
+    this._movement = { x: 0, y: -2 };
     this._speed = { x: 3, y: 3 };
     this.color('#387AD6');
     this.bind("EnterFrame", this._enterframe);
@@ -168,8 +168,8 @@ Crafty.c('Mahn', {
       _.defaults(this, {
         leftWall:  [],
         rightWall: [],
-        length: 8,
-        width: 2,
+        length:    8,
+        width:     2,
         direction: 'up'
       });
 

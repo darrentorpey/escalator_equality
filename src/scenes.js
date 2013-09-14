@@ -32,20 +32,35 @@ Crafty.scene('Game', function() {
 
   drawWall();
 
-  window.laydee = Crafty.e('Laydee').at(1, 1);
+  var mahnStart   = { x: 5, y: 1 },
+      laydeeStart = { x: mahnStart.x + 10, y: mahnStart.y };
 
-  Crafty.e('Mahn').at(10, 1);
-  Crafty.e('Mahn').at(7, 4);
+  window.laydee = Crafty.e('Laydee').at(mahnStart.x + 6, 3);
 
-  window.escalator = Escalator.create({ x: 5, y: 15, length: 12 });
-  window.escalatorDown = Escalator.create({ x: 15, y: 15, length: 10, direction: 'down' });
-
-  // Show the victory screen once all villages are visisted
-  this.show_victory = this.bind('VillageVisited', function() {
-    if (!Crafty('Village').length) {
-      Crafty.scene('Victory');
-    }
+  _(5).times(function(n) {
+    Crafty.e('Mahn').at(mahnStart.x + 1, mahnStart.y - (n * 3));
   });
+  _(7).times(function(n) {
+    Crafty.e('Mahn').at(mahnStart.x + 2, mahnStart.y - (n * 2 + 1));
+  });
+
+  _(5).times(function(n) {
+    Crafty.e('Mahn').at(laydeeStart.x + 1, laydeeStart.y - (n * 2 + 1));
+  });
+  _(4).times(function(n) {
+    Crafty.e('Mahn').at(laydeeStart.x + 2, laydeeStart.y - (n * 2 + 1));
+  });
+
+  _(5).times(function(n) {
+    Crafty.e('Mahn').at(laydeeStart.x + 1, laydeeStart.y + 20 - (n * 2 + 1));
+  });
+  _(4).times(function(n) {
+    Crafty.e('Mahn').at(laydeeStart.x + 2, laydeeStart.y + 20 - (n * 2 + 1));
+  });
+
+  window.escalator =     Escalator.create({ x: mahnStart.x, y: mahnStart.y + 25, length: 12 });
+  window.escalatorDown = Escalator.create({ x: mahnStart.x + 10, y: mahnStart.y + 25, length: 12, direction: 'down' });
+
 }, function() {
   // Remove our event binding from above so that we don't
   //  end up having multiple redundant event watchers after
